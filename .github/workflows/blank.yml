@@ -5,7 +5,8 @@ on:
     branches:
       - main
   schedule:
-    - cron: '00 7 * * *'  # 北京时间 00:00 (UTC+8)，对应UTC时间 16:00
+    # 每天 UTC 时间 16 点的 1-30 分钟内每分钟触发一次 (对应北京时间 00:01-00:30)
+    - cron: '1-30 16 * * *'
   workflow_dispatch:
 
 permissions:
@@ -28,7 +29,21 @@ jobs:
       - name: 安装依赖包
         run: |
           pip install curl_cffi requests
+          
+      - name: 计算随机延迟
+        id: random_delay # 为此步骤添加ID以便引用其输出
+        run: |
+          # 生成一个 0 到 1799 秒 (即 0 到 29 分 59 秒) 之间的随机延迟秒数
+          # 由于 cron 已经限定在 1-30 分钟内触发，这里随机延迟的范围可以更窄
+          RANDOM_SECONDS=$(( RANDOM % 1800 )) # 1800 秒 = 30 分钟
+          echo "::notice 🤖 将在签到前延迟 ${RANDOM_SECONDS} 秒..."
+          # 将随机秒数设置为步骤的输出，以便后续步骤使用
+          echo "DELAY_SECONDS=${RANDOM_SECONDS}" >> $GITHUB_OUTPUT
 
+      - name: 随机延迟
+        # 使用上一步骤计算出的延迟秒数进行休眠
+        run: sleep ${{ steps.random_delay.outputs.DELAY_SECONDS }}
+        
       - name: 运行签到脚本
         env:
           # 基本账号
