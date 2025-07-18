@@ -5,8 +5,8 @@ on:
     branches:
       - main
   schedule:
-    # 每天 UTC 时间 16 点的 1-30 分钟内每分钟触发一次 (对应北京时间 00:01-00:30)
-    - cron: '1-30 16 * * *'
+    # 每天 UTC 时间 16 点的 0-7 分钟内每分钟触发一次 (对应北京时间 00:00-00:07)
+    - cron: '0-7 16 * * *'
   workflow_dispatch:
 
 permissions:
