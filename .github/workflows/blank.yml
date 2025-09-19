@@ -48,7 +48,6 @@ jobs:
           # 基本账号
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
-          
           # 额外账号1-5
           USER1: ${{ secrets.USER1 }}
           PASS1: ${{ secrets.PASS1 }}
